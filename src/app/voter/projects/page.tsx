@@ -76,8 +76,8 @@ export default function VoterProjectsPage() {
         project.description?.toLowerCase().includes(searchQuery.toLowerCase());
       let matchesStatus = statusFilter === "all";
       if (!matchesStatus) {
-        if (statusFilter === "ongoing") {
-          matchesStatus = project.status === "started" || project.status === "ongoing";
+        if (statusFilter === "in_progress") {
+          matchesStatus = project.status === "in_progress" || project.status === "ongoing" || project.status === "started";
         } else {
           matchesStatus = project.status === statusFilter;
         }
@@ -104,7 +104,7 @@ export default function VoterProjectsPage() {
   const stats = {
     total: projects?.length || 0,
     completed: projects?.filter((p: any) => p.status === "completed").length || 0,
-    ongoing: projects?.filter((p: any) => p.status === "started" || p.status === "ongoing").length || 0,
+    ongoing: projects?.filter((p: any) => p.status === "in_progress" || p.status === "ongoing" || p.status === "started").length || 0,
     totalFunds: projects?.reduce((sum: number, p: any) => sum + parseFloat(p.estimatedCost || 0), 0) || 0,
   };
 
@@ -145,7 +145,7 @@ export default function VoterProjectsPage() {
               <Clock className="h-5 w-5 text-yellow-500" />
               <div>
                 <div className="text-xl font-bold text-yellow-600">{stats.ongoing}</div>
-                <p className="text-xs text-muted-foreground">Ongoing</p>
+                <p className="text-xs text-muted-foreground">In Progress</p>
               </div>
             </div>
           </CardContent>
@@ -204,7 +204,7 @@ export default function VoterProjectsPage() {
         <Tabs value={statusFilter} onValueChange={setStatusFilter}>
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+            <TabsTrigger value="in_progress">In Progress</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
             <TabsTrigger value="planned">Planned</TabsTrigger>
           </TabsList>
@@ -219,56 +219,56 @@ export default function VoterProjectsPage() {
           filteredProjects.map((project: any) => (
             <Link key={project.uuid} href={`/voter/projects/${project.uuid}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-start justify-between gap-4">
-                  {/* Project Image Thumbnail */}
-                  {project.imageUrl && (
-                    <div className="relative w-24 h-24 flex-shrink-0">
-                      <Image
-                        src={project.imageUrl}
-                        alt={project.title}
-                        fill
-                        className="object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold">{project.title}</h3>
-                      <Badge className={getStatusColor(project.status)}>
-                        {project.status.replace("_", " ")}
-                      </Badge>
-                    </div>
-
-                    {project.location && (
-                      <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                        <MapPin className="h-3 w-3" />
-                        {project.location}
-                      </p>
-                    )}
-
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <span>{formatCurrency(project.estimatedCost || 0)}</span>
-                      {project.fundSource && (
-                        <Badge variant="outline" className={getFundSourceColor(project.fundSource)}>
-                          {project.fundSource}
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="mt-3">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span>Progress</span>
-                        <span>{project.percentComplete || 0}%</span>
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-start justify-between gap-4">
+                    {/* Project Image Thumbnail */}
+                    {project.imageUrl && (
+                      <div className="relative w-24 h-24 flex-shrink-0">
+                        <Image
+                          src={project.imageUrl}
+                          alt={project.title}
+                          fill
+                          className="object-cover rounded-lg"
+                        />
                       </div>
-                      <Progress value={project.percentComplete || 0} className="h-2" />
-                    </div>
-                  </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold">{project.title}</h3>
+                        <Badge className={getStatusColor(project.status)}>
+                          {project.status.replace("_", " ")}
+                        </Badge>
+                      </div>
 
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
+                      {project.location && (
+                        <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+                          <MapPin className="h-3 w-3" />
+                          {project.location}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-4 text-sm">
+                        <span>{formatCurrency(project.estimatedCost || 0)}</span>
+                        {project.fundSource && (
+                          <Badge variant="outline" className={getFundSourceColor(project.fundSource)}>
+                            {project.fundSource}
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span>Progress</span>
+                          <span>{project.percentComplete || 0}%</span>
+                        </div>
+                        <Progress value={project.percentComplete || 0} className="h-2" />
+                      </div>
+                    </div>
+
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                </CardContent>
+              </Card>
             </Link>
           ))
         ) : (

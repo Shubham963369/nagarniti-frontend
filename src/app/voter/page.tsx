@@ -18,6 +18,7 @@ import {
   Clock,
   MapPin,
 } from "lucide-react";
+import { FundDistribution } from "@/components/voter/fund-distribution";
 
 export default function VoterDashboard() {
   const { user } = useAuthStore();
@@ -65,6 +66,9 @@ export default function VoterDashboard() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Fund Distribution */}
+      <FundDistribution />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -122,6 +126,7 @@ export default function VoterDashboard() {
           </CardContent>
         </Card>
       </div>
+
 
       {/* Recent Projects */}
       <Card>

@@ -19,17 +19,22 @@ import {
   Building2,
   Hammer,
   CheckCircle,
+  User,
+  AlertTriangle,
+  ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/voter", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/voter", icon: LayoutDashboard, label: "Home" },
   { href: "/voter/ongoing-work", icon: Hammer, label: "Ongoing Work" },
+  { href: "/voter/projects", icon: ClipboardList, label: "Ward Projects" },
   { href: "/voter/ward-updates", icon: CheckCircle, label: "Ward Updates" },
   { href: "/voter/my-society", icon: Building2, label: "My Society" },
   { href: "/voter/map", icon: Map, label: "Map" },
-  { href: "/voter/grievances", icon: MessageSquare, label: "Grievances" },
+  { href: "/voter/grievances", icon: AlertTriangle, label: "Grievance" },
   { href: "/voter/notifications", icon: Bell, label: "Notifications" },
+  { href: "/voter/profile", icon: User, label: "Profile" },
   { href: "/voter/settings", icon: Settings, label: "Settings" },
 ];
 
