@@ -42,9 +42,9 @@ import { DocumentList } from "@/components/ui/document-upload";
 import { BeforeAfterComparison } from "@/components/projects/before-after-comparison";
 import dynamic from "next/dynamic";
 
-// Dynamically import map component to avoid SSR issues
-const SingleLocationMap = dynamic(
-  () => import("@/components/maps/single-location-map").then((mod) => mod.SingleLocationMap),
+// Dynamically import Google Maps component to avoid SSR issues
+const GoogleSingleLocationMap = dynamic(
+  () => import("@/components/maps/google-single-location-map").then((mod) => mod.GoogleSingleLocationMap),
   { ssr: false, loading: () => <div className="h-40 bg-muted rounded-lg animate-pulse" /> }
 );
 
@@ -361,7 +361,7 @@ export default function VoterProjectsPage() {
               {selectedProject.latitude && selectedProject.longitude && (
                 <div>
                   <p className="text-sm font-medium mb-2">Project Location</p>
-                  <SingleLocationMap
+                  <GoogleSingleLocationMap
                     lat={Number(selectedProject.latitude)}
                     lng={Number(selectedProject.longitude)}
                     title={selectedProject.title}

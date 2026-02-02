@@ -33,9 +33,9 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
-// Dynamically import AddressLocationPicker to avoid SSR issues with Leaflet
-const AddressLocationPicker = dynamic(
-  () => import("@/components/maps/address-location-picker").then((mod) => mod.AddressLocationPicker),
+// Dynamically import Google Address Location Picker to avoid SSR issues
+const GoogleAddressLocationPicker = dynamic(
+  () => import("@/components/maps/google-address-location-picker").then((mod) => mod.GoogleAddressLocationPicker),
   { ssr: false, loading: () => <div className="h-64 bg-muted rounded-lg animate-pulse" /> }
 );
 
@@ -685,7 +685,7 @@ export default function ProjectsPage() {
               <div className="space-y-2">
                 <Label>Location</Label>
                 <p className="text-xs text-muted-foreground mb-1">Search address or click on map</p>
-                <AddressLocationPicker
+                <GoogleAddressLocationPicker
                   address={projectFormData.location}
                   onAddressChange={(address) => setProjectFormData({ ...projectFormData, location: address })}
                   location={

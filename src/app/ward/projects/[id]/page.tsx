@@ -46,8 +46,8 @@ import { DocumentList } from "@/components/ui/document-upload";
 import { CommentSection } from "@/components/comments/comment-section";
 import dynamic from "next/dynamic";
 
-const SingleLocationMap = dynamic(
-  () => import("@/components/maps/single-location-map").then((mod) => mod.SingleLocationMap),
+const GoogleSingleLocationMap = dynamic(
+  () => import("@/components/maps/google-single-location-map").then((mod) => mod.GoogleSingleLocationMap),
   { ssr: false, loading: () => <div className="h-48 bg-muted rounded-lg animate-pulse" /> }
 );
 
@@ -310,7 +310,7 @@ export default function ProjectDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <SingleLocationMap
+                <GoogleSingleLocationMap
                   lat={Number(project.latitude)}
                   lng={Number(project.longitude)}
                   title={project.title}

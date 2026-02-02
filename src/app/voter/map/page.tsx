@@ -26,9 +26,9 @@ import { MapPin, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-// Dynamically import map components to avoid SSR issues
-const ProjectMap = dynamic(
-  () => import("@/components/maps/project-map").then((mod) => mod.ProjectMap),
+// Dynamically import Google Maps components to avoid SSR issues
+const GoogleProjectMap = dynamic(
+  () => import("@/components/maps/google-project-map").then((mod) => mod.GoogleProjectMap),
   {
     ssr: false,
     loading: () => (
@@ -39,8 +39,8 @@ const ProjectMap = dynamic(
   }
 );
 
-const ProjectMapLegend = dynamic(
-  () => import("@/components/maps/project-map").then((mod) => mod.ProjectMapLegend),
+const GoogleProjectMapLegend = dynamic(
+  () => import("@/components/maps/google-project-map").then((mod) => mod.GoogleProjectMapLegend),
   { ssr: false }
 );
 
@@ -99,7 +99,7 @@ export default function VoterMapPage() {
       {/* Map Legend */}
       <Card>
         <CardContent className="py-3">
-          <ProjectMapLegend />
+          <GoogleProjectMapLegend />
         </CardContent>
       </Card>
 
@@ -109,7 +109,7 @@ export default function VoterMapPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <ProjectMap
+        <GoogleProjectMap
           projects={filteredProjects || []}
           className="h-[500px]"
           onProjectClick={(project) => setSelectedProject(project)}

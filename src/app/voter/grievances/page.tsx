@@ -33,14 +33,14 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
-// Dynamically import map components to avoid SSR issues with Leaflet
-const LocationPicker = dynamic(
-  () => import("@/components/maps/location-picker").then((mod) => mod.LocationPicker),
+// Dynamically import Google Maps components to avoid SSR issues
+const GoogleLocationPicker = dynamic(
+  () => import("@/components/maps/google-location-picker").then((mod) => mod.GoogleLocationPicker),
   { ssr: false, loading: () => <div className="h-64 bg-muted rounded-lg animate-pulse" /> }
 );
 
-const SingleLocationMap = dynamic(
-  () => import("@/components/maps/single-location-map").then((mod) => mod.SingleLocationMap),
+const GoogleSingleLocationMap = dynamic(
+  () => import("@/components/maps/google-single-location-map").then((mod) => mod.GoogleSingleLocationMap),
   { ssr: false, loading: () => <div className="h-32 bg-muted rounded-lg animate-pulse" /> }
 );
 
@@ -487,7 +487,7 @@ export default function VoterGrievancesPage() {
                     {/* Location Map */}
                     {grievance.latitude && grievance.longitude && (
                       <div className="mt-3">
-                        <SingleLocationMap
+                        <GoogleSingleLocationMap
                           lat={Number(grievance.latitude)}
                           lng={Number(grievance.longitude)}
                           title={grievance.title}
@@ -555,115 +555,123 @@ export default function VoterGrievancesPage() {
         </div>
       )}
 
-      {/* Submit Grievance Dialog */}
+      {/* Submit Grievance Dialog - Wider with 2-column layout */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Submit a Grievance</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Brief title of the issue"
-                required
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Basic Info */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Brief title of the issue"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GRIEVANCE_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Describe the issue in detail..."
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Photos (Optional)</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Add photos to help illustrate the issue
+                  </p>
+                  <ImageUpload
+                    value={formData.imageUrls}
+                    onChange={(urls) => setFormData({ ...formData, imageUrls: urls })}
+                    folder="grievances"
+                    maxFiles={5}
+                    disabled={submitMutation.isPending}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Documents (Optional)</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Attach supporting documents (PDF, DOC, DOCX)
+                  </p>
+                  <DocumentUpload
+                    value={formData.documentUrls}
+                    onChange={(urls) => setFormData({ ...formData, documentUrls: urls })}
+                    folder="documents"
+                    maxFiles={3}
+                    disabled={submitMutation.isPending}
+                  />
+                </div>
+              </div>
+
+              {/* Right Column - Location */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location Address (Optional)</Label>
+                  <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="e.g., Near ABC School, MG Road"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Pin on Map (Optional)</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Click on the map to mark the exact location of the issue
+                  </p>
+                  <GoogleLocationPicker
+                    value={
+                      formData.latitude && formData.longitude
+                        ? { lat: formData.latitude, lng: formData.longitude }
+                        : null
+                    }
+                    onChange={(pos) =>
+                      setFormData({
+                        ...formData,
+                        latitude: pos?.lat || null,
+                        longitude: pos?.lng || null,
+                      })
+                    }
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {GRIEVANCE_CATEGORIES.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="location">Location Address (Optional)</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Near ABC School, MG Road"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Pin on Map (Optional)</Label>
-              <p className="text-xs text-muted-foreground mb-2">
-                Click on the map to mark the exact location of the issue
-              </p>
-              <LocationPicker
-                value={
-                  formData.latitude && formData.longitude
-                    ? { lat: formData.latitude, lng: formData.longitude }
-                    : null
-                }
-                onChange={(pos) =>
-                  setFormData({
-                    ...formData,
-                    latitude: pos?.lat || null,
-                    longitude: pos?.lng || null,
-                  })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Describe the issue in detail..."
-                rows={4}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Photos (Optional)</Label>
-              <p className="text-xs text-muted-foreground mb-2">
-                Add photos to help illustrate the issue
-              </p>
-              <ImageUpload
-                value={formData.imageUrls}
-                onChange={(urls) => setFormData({ ...formData, imageUrls: urls })}
-                folder="grievances"
-                maxFiles={5}
-                disabled={submitMutation.isPending}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Documents (Optional)</Label>
-              <p className="text-xs text-muted-foreground mb-2">
-                Attach supporting documents (PDF, DOC, DOCX)
-              </p>
-              <DocumentUpload
-                value={formData.documentUrls}
-                onChange={(urls) => setFormData({ ...formData, documentUrls: urls })}
-                folder="documents"
-                maxFiles={3}
-                disabled={submitMutation.isPending}
-              />
-            </div>
-
-            <DialogFooter>
+            <DialogFooter className="mt-6">
               <Button type="button" variant="outline" onClick={closeDialog}>
                 Cancel
               </Button>
